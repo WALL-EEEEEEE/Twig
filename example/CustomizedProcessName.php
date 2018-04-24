@@ -1,17 +1,18 @@
 <?php
+
 include(dirname(__DIR__).'/src/autoload.php');
 
 use Twig\Process\Processd;
 use Twig\Process\Process;
 
-$process_manager = new Processd();
+$process_manager = new Processd('ProcessManager'); //Define name of master process
 
 //create 10 process
 for($i = 0; $i < 10; $i++) {
     $process = new Process(function() {
         echo "child process 1".PHP_EOL;
         sleep(5);
-    });
+    },'Child'.$i); //Define name of child processes
     $process_manager->add($process);
 }
 
