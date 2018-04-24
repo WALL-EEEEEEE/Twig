@@ -4,7 +4,7 @@
 
 # Introduction
 
-&ensp;&ensp;&ensp;&ensp;**Twig** was derived from [Pider](git@github.com:duanqiaobb/pider.git)--A distributed, multi-processes spider framework. It facilitates `Pider` distribution and muli-process features.
+&ensp;&ensp;&ensp;&ensp;**Twig** is derived from [Pider](git@github.com:duanqiaobb/pider.git)--A distributed, multi-processes spider framework. It facilitates `Pider`'s distribution and muli-process features.
 
 # Requirements
 
@@ -13,7 +13,7 @@
 + posix
 
 # Usage
-&ensp;&ensp;&ensp;&ensp;First and all, `autoload.php` file under `src` directory need to be included to solve all the dependency.
+&ensp;&ensp;&ensp;&ensp;First and all, `autoload.php` file under `src` directory need to be included to solve all dependencies.
 
 ## MultiProcess
 
@@ -40,7 +40,7 @@ $process_manager->run();
 
 ## Customize process name
 
-&ensp;&ensp;&ensp;&ensp;By default, Master process and Child process will be populated by predefined default name in `Twig`.Master process claimed as `twig(master)` by default, Child process is `twig(child-pid)` by default (`pid` is process id owned to child process ). However, you can customized your name in program.
+&ensp;&ensp;&ensp;&ensp;By default, Master process and Child process will be populated by default predefined name in `Twig`. Master process claims as `twig(master)` by default, Child process is `twig(child-pid)` predefined (`pid` is process id owned to child process ). However, you can customiz your name in program.
 
 ```php
 <?php
@@ -87,4 +87,4 @@ $process_manager->run();
 ```
 
 Note:
-> You can debug it by using `ps` or `top`("c" to switch on command name display). 
+> You can debug it by using `ps` or `top`("c" to switch to command name display). 
