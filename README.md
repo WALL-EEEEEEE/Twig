@@ -4,7 +4,7 @@
 
 # Introduction
 
-&ensp;&ensp;&ensp;&ensp;**Twig** is derived from [Pider](git@github.com:duanqiaobb/pider.git)--A distributed, multi-processes spider framework. It facilitates `Pider`'s distribution and muli-process features.
+&ensp;&ensp;&ensp;&ensp;**Twig** is derived from [Pider](http://github.com/duanqiaobb/pider.git)--A distributed, multi-processes spider framework. It facilitates `Pider`'s distribution and muli-process features.
 
 # Requirements
 
