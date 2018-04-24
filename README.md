@@ -88,3 +88,33 @@ $process_manager->run();
 
 Note:
 > You can debug it by using `ps` or `top`("c" to switch to command name display). 
+
+## Daemon process
+
+&ensp;&ensp;&ensp;&ensp; `Twig` also supplies  a eaiser way to create a daemon process. 
+
+```
+<?php
+
+include(dirname(__DIR__).'/src/autoload.php');
+
+use Twig\Process\Processd;
+use Twig\Process\Process;
+
+$process_manager = new Processd('ProcessManager',true); //true set daemon process mode, vice verse
+
+//create 10 process
+for($i = 0; $i < 10; $i++) {
+    $process = new Process(function() {
+        echo "child process 1".PHP_EOL;
+        sleep(5);
+    },'Child'.$i); //Define name of child processes
+    $process_manager->add($process);
+}
+
+$process_manager->run();
+```
+
+##Contribution
+
+&ensp;&ensp;&ensp;&ensp;If you have any ideas, please emit an issue or post a pull request.
