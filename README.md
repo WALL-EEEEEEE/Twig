@@ -116,7 +116,7 @@ $process_manager->run();
 ```
 
 ## IPC with shared memory
-&ensp;&ensp;&ensp;&ensp; `Twig` just support simple IPC method now.`Shared Memory` is the only way avialible current.
+&ensp;&ensp;&ensp;&ensp; `Twig` just support simple IPC method now.`Shared Memory` is the only way available current.
 
 + Data from parent 
 
