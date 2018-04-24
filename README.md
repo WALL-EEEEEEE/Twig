@@ -91,7 +91,7 @@ Note:
 
 ## Daemon process
 
-&ensp;&ensp;&ensp;&ensp; `Twig` also supplies  a eaiser way to create a daemon process. 
+&ensp;&ensp;&ensp;&ensp; `Twig` also supplies  a eaiser way to create daemon processes. 
 
 ```
 <?php
@@ -115,6 +115,65 @@ for($i = 0; $i < 10; $i++) {
 $process_manager->run();
 ```
 
-##Contribution
+## IPC with shared memory
+&ensp;&ensp;&ensp;&ensp; `Twig` just support simple IPC method now.`Shared Memory` is the only way avialible current.
+
++ Data from parent 
+
+```php
+<?php
+
+include(dirname(__DIR__).'/src/autoload.php');
+
+use Twig\Process\Processd;
+use Twig\Process\Process;
+use Twig\Process\Shared;
+$process_manager = new Processd('ProcessManager'); 
+$process_manager->share(new Shared(['what\'s','your','name'])); // share data in parent process
+
+//create 10 process
+for($i = 0; $i < 10; $i++) {
+    $process = new Process(function($process) use($i) {
+        echo "child process $i".PHP_EOL;
+        //get shared data
+        $shared_data = $process->shared();
+        var_dump($shared_data);
+        sleep(5);
+    },'Child'.$i); 
+    $process_manager->add($process);
+}
+
+$process_manager->run();
+```
++ Data from childs
+
+```php
+<?php
+
+include(dirname(__DIR__).'/src/autoload.php');
+
+use Twig\Process\Processd;
+use Twig\Process\Process;
+use Twig\Process\Shared;
+$process_manager = new Processd('ProcessManager'); 
+$process_manager->share(new Shared(['what\'s','your','name'])); // share data in parent process
+
+//create 10 process
+for($i = 0; $i < 10; $i++) {
+    $process = new Process(function($process) use($i) {
+        echo "child process $i".PHP_EOL;
+        //get shared data
+        $shared_data = $process->shared();
+        $process->feedback(new Shared(['I am child '.$i]));//Emit data from childs
+        sleep(5);
+    },'Child'.$i); 
+    $process_manager->add($process);
+}
+
+$process_manager->run();
+var_dump($process_manager->feedbacks()); //Received data from childs
+```
+
+## Contribution
 
 &ensp;&ensp;&ensp;&ensp;If you have any ideas, please emit an issue or post a pull request.

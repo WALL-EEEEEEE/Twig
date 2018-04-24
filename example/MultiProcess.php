@@ -8,8 +8,8 @@ $process_manager = new Processd();
 
 //create 10 process
 for($i = 0; $i < 10; $i++) {
-    $process = new Process(function() {
-        echo "child process 1".PHP_EOL;
+    $process = new Process(function() use ($i){
+        echo "child process $i".PHP_EOL;
         sleep(5);
     });
     $process_manager->add($process);
