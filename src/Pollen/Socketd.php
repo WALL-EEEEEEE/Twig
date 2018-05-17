@@ -4,6 +4,7 @@ namespace Twig\Pollen;
 class Socketd implements Server {
 
     private $socket;
+    private $sockets = [];
     private $options = [
         'domain'=>   AF_INET,
         'type'  =>   SOCK_STREAM,
@@ -12,6 +13,7 @@ class Socketd implements Server {
     ]; 
     private $address;
     private $port;
+    private $read_buf;
 
     /**
      * @method __construct()
@@ -42,14 +44,37 @@ class Socketd implements Server {
         echo "Listening on ".$this->socket.":".$this->port.PHP_EOL;
         while(true) {
             if($con = socket_accept($socket)) {
-                while($read = socket_read($con,1024)) {
+                $this->sockets[] = $con;
+            } else {
+                if ($read = $this->read()) {
                     var_dump($read);
                 }
-            } else {
-                sleep(1);
+                usleep(1);
             }
        }
     }
+
+    /**
+     * @method read()
+     * Read contents from sockets
+     */
+    public function read(int $length = 1024, int $type = PHP_BINARY_READ) {
+        foreach($this->sockets as $con) {
+            socket_set_nonblock($con);
+            while($read = socket_read($con, $length, $type)) {
+                if ($read) {
+                    $this->read_buf[(int)$con]  = $read;
+                    $read_buf = $this->read_buf;
+                    $this->read_buf = [];
+                    return $read_buf;
+                } else {
+                    return false;
+                }
+            }
+            usleep(1);
+        }
+    }
+
     public function close() {
         socket_close($this->socket);
     }
