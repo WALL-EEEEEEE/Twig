@@ -1,12 +1,5 @@
 <?php
 namespace Twig\Pollen;
 
-/**
- * @class Http
- * Http protocol class
- */
-
-class Http {
-
-
+class HttpClient extends Client {
 }

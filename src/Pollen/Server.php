@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Twig\Pollen;
 
 interface Server {
