@@ -1,7 +1,10 @@
 <?php
 namespace Twig\Pollen;
+use Twig\Event\Event;
+use Twig\Event\EventDispatch as EventDispatch;
 
 class Socketd implements Server {
+    use EventDispatch;
 
     private $socket;
     private $sockets = [];
@@ -11,6 +14,15 @@ class Socketd implements Server {
         'protocol'=> SOL_TCP,
         'block' => false
     ]; 
+    protected $events = [
+        'CREATE',
+        'LISTEN',
+        'CONNECT',
+        'CONNECT_CLOSE',
+        'READ',
+        'WRITE',
+        'CLOSE',
+    ];
     private $address;
     private $port;
     private $read_buf;
@@ -33,6 +45,7 @@ class Socketd implements Server {
         }
         echo "Creating socket ...".PHP_EOL;
         $this->socket = socket_create($options['domain'],$options['type'],$options['protocol']);
+        $this->dispatch(new Event('CREATE'));
     }
     public function listen() {
         $socket = $this->socket;
@@ -44,6 +57,7 @@ class Socketd implements Server {
         echo "Listening on ".$this->socket.":".$this->port.PHP_EOL;
         while(true) {
             if($con = socket_accept($socket)) {
+                $this->dispatch(new Event('CONNECT'));
                 $this->sockets[] = $con;
             } else {
                 if ($read = $this->read()) {
@@ -66,6 +80,7 @@ class Socketd implements Server {
                     $this->read_buf[(int)$con]  = $read;
                     $read_buf = $this->read_buf;
                     $this->read_buf = [];
+                    $this->dispatch(new Event('READ'));
                     return $read_buf;
                 } else {
                     return false;
@@ -77,7 +92,9 @@ class Socketd implements Server {
 
     public function close() {
         socket_close($this->socket);
+        $this->dispatch(new Event('CLOSE'));
     }
+
     public function __destruct() {
         $this->close();
     }
