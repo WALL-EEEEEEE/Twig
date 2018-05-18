@@ -11,6 +11,7 @@
 + php7.1(or above)
 + pcntl
 + posix
++ sockets
 
 # Usage
 &ensp;&ensp;&ensp;&ensp;First and all, `autoload.php` file under `src` directory need to be included to solve all dependencies.
