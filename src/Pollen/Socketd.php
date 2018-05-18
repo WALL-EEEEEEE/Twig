@@ -1,10 +1,13 @@
 <?php
 namespace Twig\Pollen;
 use Twig\Event\Event;
-use Twig\Event\EventDispatch as EventDispatch;
+use Twig\Event\Dispatcher as Dispatcher;
+use Twig\Event\Listener as Listener;
+use Twig\Pollen\Protocols\Sockets;
 
-class Socketd implements Server {
-    use EventDispatch;
+class Socketd extends Sockets implements Server {
+    use Listener;
+    use Dispatcher;
 
     private $socket;
     private $sockets = [];
@@ -43,26 +46,23 @@ class Socketd implements Server {
         } else {
             $options = array_merge($this->options,$options);
         }
-        echo "Creating socket ...".PHP_EOL;
         $this->socket = socket_create($options['domain'],$options['type'],$options['protocol']);
-        $this->dispatch(new Event('CREATE'));
     }
     public function listen() {
+        $this->dispatch(new Event('CREATE'),$this->socket);
         $socket = $this->socket;
         socket_bind($socket,$this->address, $this->port);
         socket_listen($socket);
+        $this->dispatch(new Event('LISTEN'),$this->socket);
         if (!$this->options['block']) {
             socket_set_nonblock($socket);
         }
-        echo "Listening on ".$this->socket.":".$this->port.PHP_EOL;
         while(true) {
             if($con = socket_accept($socket)) {
-                $this->dispatch(new Event('CONNECT'));
+                $this->dispatch(new Event('CONNECT'),$con);
                 $this->sockets[] = $con;
             } else {
-                if ($read = $this->read()) {
-                    var_dump($read);
-                }
+                $this->read();
                 usleep(1);
             }
        }
@@ -80,7 +80,8 @@ class Socketd implements Server {
                     $this->read_buf[(int)$con]  = $read;
                     $read_buf = $this->read_buf;
                     $this->read_buf = [];
-                    $this->dispatch(new Event('READ'));
+                    $sockets = new Sockets($con,$read_buf);
+                    $this->dispatch(new Event('READ'),$sockets);
                     return $read_buf;
                 } else {
                     return false;

@@ -1,5 +1,5 @@
 <?php
-namespace Twig\Event\EventError;
+namespace Twig\Event;
 
 class  EventError extends \ErrorException {
 
