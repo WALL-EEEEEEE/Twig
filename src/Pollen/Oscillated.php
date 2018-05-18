@@ -1,7 +1,8 @@
 <?php
 namespace Twig\Pollen;
+use Twig\Pollen\Protocols\Osci_v1 as Osci;
 
-class Oscillated implements Server {
+class Oscillated extends Osci implements Server  {
     private $socket;
     private $address;
     private $port;
@@ -17,6 +18,8 @@ class Oscillated implements Server {
         $this->socket->close();
     }
 
+    public function write() {
+    }
     public function __destruct() {
         $this->socket->close();
     }
