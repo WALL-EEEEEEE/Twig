@@ -48,9 +48,11 @@ class Oscillated extends Osci implements Server  {
     }
 
     public function status() {
-        $status = 'Actived crawlers:'.PHP_EOL;
-        $status.= implode($this->clients,"\r\n");
-        $status.= "\r\n";
+
+        $status = '------------ CRAWLERS STATUS ----------------'.PHP_EOL;
+        $status.= implode($this->clients,PHP_EOL);
+        $status.= PHP_EOL;
+        $status.= "---------------------------- ----------------".PHP_EOL;
         return $status;
     }
 }
