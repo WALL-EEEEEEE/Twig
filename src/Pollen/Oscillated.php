@@ -16,16 +16,9 @@ class Oscillated extends Osci implements Server  {
         $this->socket->on('LISTEN',function($socket) {
             echo "Socket listens on:".$socket.PHP_EOL;
         });
-
         $this->socket->on('READ',function($socket) {
-            echo "Received: ".PHP_EOL;
             $read = $socket->read();
-            var_dump($read);
-            if (strpos($read,'status') !== FALSE) {
-                $status = $this->status();
-                var_dump($status);
-                $socket->write($status,1024);
-            }
+            $this->process($read);
         });
         $this->socket->on('CONNECT',function($socket) {
             socket_getpeername($socket,$ip,$port);
@@ -41,10 +34,8 @@ class Oscillated extends Osci implements Server  {
         $this->socket->close();
     }
 
-    public function write() {
-    }
     public function __destruct() {
-        $this->socket->close();
+        $this->close();
     }
 
     public function status() {
