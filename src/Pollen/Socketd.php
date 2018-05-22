@@ -80,8 +80,8 @@ class Socketd extends Sockets implements Server {
                     $this->read_buf[(int)$con]  = $read;
                     $read_buf = $this->read_buf;
                     $this->read_buf = [];
-                    $sockets = new Sockets($con,$read_buf);
-                    $this->dispatch(new Event('READ'),$sockets);
+                    $csocket = new Sockets($con,$read_buf);
+                    $this->dispatch(new Event('READ'),$csocket);
                     return $read_buf;
                 } else {
                     return false;
