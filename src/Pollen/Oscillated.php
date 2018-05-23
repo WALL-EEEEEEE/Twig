@@ -11,10 +11,10 @@ class Oscillated extends Osci implements Server  {
     public function __construct(string $address = '0.0.0.0', int $port=2237) {
         $this->socket = new Socketd($address, $port);
         $this->socket->on('CREATE',function($socket) {
-            echo "Socket created :".$socket.PHP_EOL;
+            echo "Socket created :".PHP_EOL;
         });
         $this->socket->on('LISTEN',function($socket) {
-            echo "Socket listens on:".$socket.PHP_EOL;
+            echo "Socket listens on:".$socket->getAddress().':'.$socket->getPort().PHP_EOL;
         });
         $this->socket->on('READ',function($socket) {
             $this->process($socket);
@@ -22,6 +22,9 @@ class Oscillated extends Osci implements Server  {
         $this->socket->on('CONNECT',function($socket) {
             socket_getpeername($socket,$ip,$port);
             $this->clients[] = $ip.':'.$port;
+        });
+        $this->socket->on('CONNECT_CLOSE',function($socket) {
+            echo "Socket connection close ...".PHP_EOL;
         });
     }
 
@@ -38,7 +41,6 @@ class Oscillated extends Osci implements Server  {
     }
 
     public function status() {
-
         $status = '------------ CRAWLERS STATUS ----------------'.PHP_EOL;
         $status.= implode($this->clients,PHP_EOL);
         $status.= PHP_EOL;

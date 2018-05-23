@@ -6,8 +6,6 @@ use Twig\Event\Listener as Listener;
 use Twig\Pollen\Protocols\Sockets;
 
 class Socketd extends Sockets implements Server {
-    use Listener;
-    use Dispatcher;
 
     private $socket;
     private $sockets = [];
@@ -49,18 +47,19 @@ class Socketd extends Sockets implements Server {
         $this->socket = socket_create($options['domain'],$options['type'],$options['protocol']);
     }
     public function listen() {
-        $this->dispatch(new Event('CREATE'),$this->socket);
+        $this->dispatch(new Event('CREATE'),$this);
         $socket = $this->socket;
         socket_bind($socket,$this->address, $this->port);
         socket_listen($socket);
-        $this->dispatch(new Event('LISTEN'),$this->socket);
+        $this->dispatch(new Event('LISTEN'),$this);
         if (!$this->options['block']) {
             socket_set_nonblock($socket);
         }
         while(true) {
             if($con = socket_accept($socket)) {
                 $this->dispatch(new Event('CONNECT'),$con);
-                $this->sockets[] = $con;
+                $socket_id = (int)$con;
+                $this->sockets[$socket_id] = $con;
             } else {
                 $this->read();
                 usleep(1);
@@ -73,22 +72,47 @@ class Socketd extends Sockets implements Server {
      * Read contents from sockets
      */
     public function read(int $length = 1024, int $type = PHP_BINARY_READ) {
-        foreach($this->sockets as $con) {
+        foreach($this->sockets as $key=>$con) {
+            //clean closed connection in clients
             socket_set_nonblock($con);
             while($read = socket_read($con, $length, $type)) {
                 if ($read) {
                     $this->read_buf[(int)$con]  = $read;
-                    $read_buf = $this->read_buf;
-                    $this->read_buf = [];
-                    $csocket = new Sockets($con,$read_buf);
-                    $this->dispatch(new Event('READ'),$csocket);
-                    return $read_buf;
-                } else {
+               } else {
                     return false;
                 }
             }
-            usleep(1);
+            if (!empty($this->read_buf)) {
+                $read_buf = $this->read_buf;
+                $this->read_buf = [];
+                $csocket = new Sockets($con,$read_buf);
+                $csocket->on('CLOSE',function($socket_id) {
+                    unset($this->sockets[$socket_id]);
+                    $this->dispatch(new Event('CONNECT_CLOSE'), $this);
+                });
+                $this->dispatch(new Event('READ'),$csocket);
+                return $read_buf;
+            } else {
+                usleep(1);
+            }
         }
+    }
+
+    /*
+     * @method getAddress()
+     * Get ip address socket attached
+     * @return string ip address
+     */
+    public function getAddress() {
+        return $this->address;
+    }
+    /**
+     * @method getPort()
+     * Get port socket attached
+     * @return string port
+     */
+    public function getPort() {
+        return $this->port;
     }
 
     public function close() {
@@ -100,5 +124,3 @@ class Socketd extends Sockets implements Server {
         $this->close();
     }
 }
-
-

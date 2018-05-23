@@ -25,7 +25,7 @@ abstract class Osci_v1 implements Protocol {
         if(!$this->valid()) {
             $invalid_response = self::INVALID_FORMAT.PHP_EOL;
             $socket->write($invalid_response,strlen($invalid_response));
-            //$socket->close();
+            $socket->close();
             return false;
         } 
         $pmethod = strtolower($this->osci_method);
@@ -52,8 +52,8 @@ abstract class Osci_v1 implements Protocol {
      */
     public function valid() {
         $vvername = stripos($this->content,self::NAME.'/'.self::VERSION) === 0;
-        $explode = explode($this->content,'\ '); 
-        $this->osci_method = @$explode[2];
+        $explode = explode(' ',$this->content); 
+        $this->osci_method = trim(@$explode[1]);
         $vmethod  = in_array($this->osci_method,$this->allowed_method);
         if ($vvername && $vmethod) {
             return true;
