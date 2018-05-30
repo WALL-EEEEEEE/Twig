@@ -7,8 +7,8 @@ abstract class Osci_v1 implements Protocol {
     private const INVALID_FORMAT='Invalid protocol format';
     private $allowed_method = [
        'STATUS',
-       'GET-URL',
-       'GET-URL-FITLER'
+       'GET_URL',
+       'GET_URL_FILTER'
     ];
     private $content;
     private $osci_method;
@@ -53,7 +53,7 @@ abstract class Osci_v1 implements Protocol {
     public function valid() {
         $vvername = stripos($this->content,self::NAME.'/'.self::VERSION) === 0;
         $explode = explode(' ',$this->content); 
-        $this->osci_method = trim(@$explode[1]);
+        $this->osci_method = strtoupper(trim(@$explode[1]));
         $vmethod  = in_array($this->osci_method,$this->allowed_method);
         if ($vvername && $vmethod) {
             return true;

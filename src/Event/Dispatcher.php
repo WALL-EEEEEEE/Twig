@@ -11,7 +11,7 @@ trait Dispatcher {
             //process resident event in queue at first
             $handler = @$this->listeners[$event->type()];
             if (!is_null($handler)) {
-                $handler($status);
+                return $handler($status);
             } 
         }
     }
