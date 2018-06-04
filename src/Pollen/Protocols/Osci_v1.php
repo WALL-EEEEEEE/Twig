@@ -8,7 +8,8 @@ abstract class Osci_v1 implements Protocol {
     private $allowed_method = [
        'STATUS',
        'GET_URL',
-       'GET_URL_FILTER'
+       'GET_URL_FILTER',
+       'PUT_URL'
     ];
     private $content;
     private $osci_method;
@@ -30,7 +31,9 @@ abstract class Osci_v1 implements Protocol {
         } 
         $pmethod = strtolower($this->osci_method);
         $response = $this->$pmethod($this->osci_content);
-        $socket->write($response,strlen($response));
+        if (!empty($response)) {
+            $socket->write($response,strlen($response));
+        }
         $socket->close();
         return true;
     }
@@ -41,9 +44,9 @@ abstract class Osci_v1 implements Protocol {
      * Interpret semantic parts of protocol
      */
     public function parse() {
-        $explode = explode($this->content,'\ ');
-        $this->osci_method = $explode[2];
-        $this->osci_content =$explode[3];
+        $explode = explode(' ',$this->content);
+        $this->osci_method = strtoupper(trim(@$explode[1]));
+        $this->osci_content =@$explode[2];
     }
 
     /**
@@ -52,8 +55,7 @@ abstract class Osci_v1 implements Protocol {
      */
     public function valid() {
         $vvername = stripos($this->content,self::NAME.'/'.self::VERSION) === 0;
-        $explode = explode(' ',$this->content); 
-        $this->osci_method = strtoupper(trim(@$explode[1]));
+        $this->parse();
         $vmethod  = in_array($this->osci_method,$this->allowed_method);
         if ($vvername && $vmethod) {
             return true;
@@ -64,4 +66,5 @@ abstract class Osci_v1 implements Protocol {
     public abstract function status();
     public abstract function get_url(); 
     public abstract function get_url_filter($domain);
+    public abstract function put_url($url);
 }
