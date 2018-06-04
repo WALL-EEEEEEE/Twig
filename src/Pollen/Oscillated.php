@@ -20,7 +20,8 @@ class Oscillated extends Osci implements Server  {
         'CLOSE',
         'STATUS',
         'GET_URL',
-        'GET_URL_FILTER'
+        'GET_URL_FILTER',
+        'PUT_URL'
     ];
 
     public function __construct(string $address = '0.0.0.0', int $port=2237) {
@@ -67,13 +68,17 @@ class Oscillated extends Osci implements Server  {
     }
 
     public function get_url_filter($domain) {
-       $url = $this->dispatch(new Event('GET_URL_FILTER'),$this);
+       $url = $this->dispatch(new Event('GET_URL_FILTER'),$this,$domain);
        return $url;
     }
 
     public function get_url() {
        $url = $this->dispatch(new Event('GET_URL'), $this);
        return $url;
+    }
+
+    public function put_url($url) {
+       $url = $this->dispatch(new Event('PUT_URL'), $this,$url);
     }
 }
 
