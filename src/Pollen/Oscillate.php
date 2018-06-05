@@ -29,7 +29,7 @@ class Oscillate extends Osci  implements Client {
         $protocol = self::NAME.'/'.self::VERSION.' GET_URL_FILTER '.$domain;
         $this->socket->write($protocol,strlen($protocol));
         $response =  $this->socket->read();
-        return $response;
+        return trim($response);
     }
 
     public function put_url($url) {
